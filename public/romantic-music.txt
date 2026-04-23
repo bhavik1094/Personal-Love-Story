@@ -1,0 +1,4 @@
+(Royalty-free, short romantic loop recommended. Example: https://cdn.pixabay.com/audio/2022/10/16/audio_12bfae6b7b.mp3)
+
+// Place your romantic music file here and rename to 'romantic-music.mp3'.
+// This file will be loaded and played automatically after YES is clicked.
