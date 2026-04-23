@@ -46,7 +46,6 @@ function VideoThumb({ video, active, onSelect, index }) {
 function HighlightsSection({ highlights }) {
   const videos = highlights?.videos ?? [];
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [videoError, setVideoError] = useState('');
   const mainVideoRef = useRef(null);
   const thumbStripRef = useRef(null);
@@ -63,7 +62,7 @@ function HighlightsSection({ highlights }) {
   }, [activeIndex, hasVideos, videos.length]);
 
   const goTo = (nextIndex) => {
-    setIsPlaying(false);
+    mainVideoRef.current?.pause();
     setVideoError('');
     setActiveIndex(nextIndex);
 
@@ -108,25 +107,6 @@ function HighlightsSection({ highlights }) {
     goTo((activeIndex - 1 + videos.length) % videos.length);
   };
 
-  const playActiveVideo = async () => {
-    const video = mainVideoRef.current;
-
-    if (!video) {
-      return;
-    }
-
-    try {
-      video.muted = false;
-      video.load();
-      await video.play();
-      setIsPlaying(true);
-      setVideoError('');
-    } catch {
-      setVideoError('Use the browser play control if autoplay with sound is blocked on this device.');
-      setIsPlaying(false);
-    }
-  };
-
   return (
     <section className="mx-auto max-w-7xl px-6 py-20 sm:px-10 sm:py-24 lg:px-12 lg:py-28">
       <SectionHeading
@@ -143,42 +123,18 @@ function HighlightsSection({ highlights }) {
                 <video
                   ref={mainVideoRef}
                   key={activeVideo.id}
+                  src={activeVideo.src}
                   className="aspect-video w-full object-cover"
                   poster={activeVideo.poster || undefined}
                   playsInline
                   preload="metadata"
                   controls
-                  onPlay={() => {
-                    setIsPlaying(true);
-                    setVideoError('');
-                  }}
-                  onPause={() => setIsPlaying(false)}
-                  onEnded={() => setIsPlaying(false)}
+                  onLoadedData={() => setVideoError('')}
+                  onPlay={() => setVideoError('')}
                   onError={() => {
-                    setIsPlaying(false);
                     setVideoError('This file could not be played in the browser. Try another highlight while I keep this one visible.');
                   }}
-                >
-                  <source src={activeVideo.src} type={activeVideo.type} />
-                  Your browser does not support HTML5 video playback.
-                </video>
-
-                {!isPlaying ? (
-                  <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.46))]">
-                    <button
-                      type="button"
-                      onClick={playActiveVideo}
-                      className="group inline-flex flex-col items-center gap-4 rounded-full border border-white/20 bg-white/14 px-8 py-7 text-white shadow-[0_25px_70px_rgba(0,0,0,0.28)] backdrop-blur-md transition hover:scale-[1.02] hover:bg-white/18 focus:outline-none focus:ring-2 focus:ring-white/80"
-                    >
-                      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-rose-600 shadow-lg transition group-hover:scale-105">
-                        &#9654;
-                      </span>
-                      <span className="text-xs font-semibold uppercase tracking-[0.34em] text-rose-50">
-                        Play Highlight
-                      </span>
-                    </button>
-                  </div>
-                ) : null}
+                />
 
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-stone-950/65 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between gap-4 px-5 pb-5 sm:px-7 sm:pb-6">
@@ -237,9 +193,19 @@ function HighlightsSection({ highlights }) {
                       </a>
                     </div>
                   ) : (
-                    <p className="text-sm uppercase tracking-[0.24em] text-stone-400">
-                      Tap play to hear the original audio and music.
-                    </p>
+                    <div className="space-y-3">
+                      <p className="text-sm uppercase tracking-[0.24em] text-stone-400">
+                        Use the native play button on the video to hear the original audio and music.
+                      </p>
+                      <a
+                        href={activeVideo.src}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex rounded-full border border-rose-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-rose-600 transition hover:bg-rose-50"
+                      >
+                        Open Video Directly
+                      </a>
+                    </div>
                   )}
                 </div>
 

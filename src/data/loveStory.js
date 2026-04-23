@@ -62,24 +62,30 @@ const chapterMeta = {
 
 const categoryCycle = ['Favorites', 'Trips', 'Wedding', 'Fun Moments', 'Memories'];
 const captionCycle = [
-  'Beautiful Memory',
-  'A Special Day',
-  'A Moment to Remember',
-  'Us',
-  'Forever In A Frame',
+  'A moment I still replay',
+  'Our quiet kind of magic',
+  'A day that still glows',
+  'Just us, exactly right',
+  'Forever in one frame',
 ];
 const descriptionCycle = [
   'A little chapter of us that still feels warm every time I look back at it.',
   'One of those memories that quietly reminds me how lucky I am to have you.',
   'A snapshot of joy, comfort, and the kind of togetherness that feels like home.',
   'A frame filled with the kind of happiness I want to keep forever.',
-  'One more reminder that even ordinary moments become beautiful with you in them.',
+  'Even the ordinary moments became beautiful because they were with you.',
 ];
 const highlightSubtitleCycle = [
   'A chapter of our celebration I could watch over and over.',
   'The kind of moment that deserves music, motion, and a thousand replays.',
   'A beautiful piece of our story, still glowing every time it begins.',
   'One of those highlights that instantly brings every feeling back.',
+];
+const memoryRevealCaptions = [
+  'The kind of smile that made the whole day softer.',
+  'A memory that still feels warm from the inside.',
+  'One little scene that became part of my forever.',
+  'The kind of moment I would always choose again.',
 ];
 
 function makeReadableTitle(filename) {
@@ -216,6 +222,18 @@ export function buildLoveStoryData() {
   const heroBackgroundPhoto = pickItemByFilename(allPhotos, 'IMG-20260213-WA0043.jpg');
   const firstSmilePhoto = pickItemByFilename(allPhotos, '1.jpg');
   const deepeningBondPhoto = pickItemByFilename(allPhotos, '2.jpg');
+  const heroSlides = [
+    pickItemByFilename(allPhotos, 'IMG-20260213-WA0043.jpg'),
+    pickItemByFilename(allPhotos, '1.jpg'),
+    pickItemByFilename(allPhotos, '2.jpg'),
+    pickItem(galleryItems, 8),
+  ]
+    .filter(Boolean)
+    .map((item, index) => ({
+      id: `hero-slide-${index + 1}`,
+      image: item.image,
+      alt: item.alt ?? `Hero memory ${index + 1}`,
+    }));
 
   const timelineEvents = [
     {
@@ -284,11 +302,18 @@ export function buildLoveStoryData() {
   })).filter((chapter) => chapter.items.length > 0);
 
   const featuredMemory = pickItem(favoritesItems, 0) ?? pickItem(galleryItems, 0);
+  const revealIndices = [1, 7, 18, 29].filter((index) => galleryItems[index]);
+  const revealMemories = revealIndices.map((index, order) => ({
+    ...galleryItems[index],
+    id: `memory-reveal-${order + 1}`,
+    caption: memoryRevealCaptions[order] ?? galleryItems[index].caption,
+  }));
 
   return {
     categories: ['All', ...categoryCycle],
     hero: {
       image: heroBackgroundPhoto?.image ?? heroItem?.image ?? '',
+      backgroundSlides: heroSlides,
       title: 'The Journey of Us',
       subtitle:
         'A small digital keepsake built from our memories, our laughter, and all the quiet little moments that turned into a beautiful life together.',
@@ -320,10 +345,13 @@ export function buildLoveStoryData() {
         'Thank you for your patience, your kindness, your laughter, and the warmth you bring into every space you enter. Loving you has been the easiest truth my heart has ever known.',
         'If I could choose this life over and over again, I would still choose you in every chapter, every season, and every possible version of forever.',
       ],
+      typedLine:
+        'Every version of life feels softer, brighter, and more meaningful because I get to share it with you.',
     },
     timelineEvents,
     galleryItems,
     memoryChapters,
+    revealMemories,
     featuredMemory: featuredMemory
       ? {
           ...featuredMemory,
@@ -337,7 +365,7 @@ export function buildLoveStoryData() {
       title: 'And There Is Still One More Thing',
       teaser:
         'A final little reveal, saved for the end, because the best feelings deserve a beautiful pause before they arrive.',
-      buttonLabel: 'One More Surprise',
+      buttonLabel: 'One More Thing ❤',
       reveal: 'No matter where life takes us, my favorite place will always be right beside you.',
       closing:
         'Thank you for being my partner, my peace, my happiness, and the love story I will always be proud of.',

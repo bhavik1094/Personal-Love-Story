@@ -1,4 +1,5 @@
 import SectionHeading from './SectionHeading';
+import TypewriterText from './TypewriterText';
 
 function LoveNoteSection({ note }) {
   return (
@@ -15,9 +16,13 @@ function LoveNoteSection({ note }) {
 
         <article className="relative overflow-hidden rounded-[2.25rem] border border-white/65 bg-white/75 p-8 shadow-[0_28px_90px_rgba(120,53,15,0.12)] backdrop-blur-xl sm:p-10 lg:p-12">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-[radial-gradient(circle_at_top,_rgba(251,207,232,0.45),_transparent_70%)]" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-40 bg-[radial-gradient(circle_at_center,_rgba(251,191,200,0.18),_transparent_72%)]" />
+
           <div className="relative">
             <p className="font-serif-display text-3xl leading-tight text-stone-800 sm:text-4xl lg:text-[2.65rem]">
-              "{note.highlight}"
+              "
+              <TypewriterText key={note.typedLine ?? note.highlight} text={note.typedLine ?? note.highlight} />
+              "
             </p>
             <div className="mt-8 space-y-5 text-base leading-8 text-stone-600 sm:text-lg">
               {note.paragraphs.map((paragraph) => (

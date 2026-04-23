@@ -4,10 +4,12 @@ import HighlightsSection from './components/HighlightsSection';
 import LoveNoteSection from './components/LoveNoteSection';
 import TimelineSection from './components/TimelineSection';
 import MemoryGallerySection from './components/MemoryGallerySection';
+import MemoryRevealSection from './components/MemoryRevealSection';
 import FeaturedCarousel from './components/FeaturedCarousel';
 import FinalSurpriseSection from './components/FinalSurpriseSection';
 import Footer from './components/Footer';
 import Lightbox from './components/Lightbox';
+import MusicToggle from './components/MusicToggle';
 import { buildLoveStoryData } from './data/loveStory';
 
 function App() {
@@ -65,11 +67,13 @@ function App() {
           featuredMemory={storyData.featuredMemory}
           onOpen={openPhoto}
         />
+        <MemoryRevealSection items={storyData.revealMemories} onOpen={openPhoto} />
         <FeaturedCarousel items={storyData.featuredMemories} onOpen={openPhoto} />
         <FinalSurpriseSection message={storyData.finalMessage} />
       </main>
 
       <Footer />
+      <MusicToggle />
 
       <Lightbox
         item={activePhoto}

@@ -1,13 +1,41 @@
+import { useEffect, useState } from 'react';
+
 function HeroSection({ hero }) {
+  const slides = hero.backgroundSlides?.length ? hero.backgroundSlides : [{ image: hero.image, alt: hero.featuredAlt }];
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  useEffect(() => {
+    if (slides.length <= 1) {
+      return undefined;
+    }
+
+    const timer = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % slides.length);
+    }, 5200);
+
+    return () => window.clearInterval(timer);
+  }, [slides.length]);
+
   return (
-    <header
-      className="relative isolate flex min-h-screen items-end overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(180deg, rgba(17, 24, 39, 0.14), rgba(17, 24, 39, 0.76)), url(${hero.image})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
+    <header className="relative isolate flex min-h-screen items-end overflow-hidden">
+      <div className="absolute inset-0">
+        {slides.map((slide, index) => (
+          <div
+            key={slide.id ?? slide.image}
+            className={`absolute inset-0 transition-opacity duration-[1800ms] ease-out ${
+              index === activeSlide ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={{
+              backgroundImage: `url(${slide.image})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+            aria-hidden="true"
+          />
+        ))}
+      </div>
+
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(17,24,39,0.14),rgba(17,24,39,0.76))]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,244,246,0.45),_transparent_34%),linear-gradient(130deg,_rgba(255,255,255,0.12),_transparent_42%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.08),transparent_24%,rgba(15,23,42,0.18)_62%,rgba(15,23,42,0.58)_100%)]" />
       <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-rose-50 via-rose-50/50 to-transparent" />
@@ -36,7 +64,7 @@ function HeroSection({ hero }) {
 
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-6 pb-14 pt-32 sm:px-10 sm:pb-16 lg:px-12 lg:pb-24">
         <div className="grid items-end gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
-          <div className="max-w-3xl rounded-[2.25rem] border border-white/20 bg-white/10 p-7 text-left shadow-[0_35px_120px_rgba(15,23,42,0.35)] backdrop-blur-md sm:p-10 lg:p-12 animate-fade-up">
+          <div className="max-w-3xl rounded-[2.25rem] border border-white/20 bg-white/10 p-7 text-left shadow-[0_35px_120px_rgba(15,23,42,0.35)] backdrop-blur-md animate-fade-up sm:p-10 lg:p-12">
             <span className="mb-5 inline-flex rounded-full border border-white/35 bg-white/10 px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.35em] text-rose-100">
               A Love Story Made For Her
             </span>
@@ -60,6 +88,22 @@ function HeroSection({ hero }) {
                 See Our Memories
               </a>
             </div>
+
+            {slides.length > 1 ? (
+              <div className="mt-7 flex items-center gap-2">
+                {slides.map((slide, index) => (
+                  <button
+                    key={slide.id ?? slide.image}
+                    type="button"
+                    onClick={() => setActiveSlide(index)}
+                    className={`h-2.5 rounded-full transition-all ${
+                      index === activeSlide ? 'w-8 bg-white' : 'w-2.5 bg-white/45 hover:bg-white/70'
+                    }`}
+                    aria-label={`Show hero memory ${index + 1}`}
+                  />
+                ))}
+              </div>
+            ) : null}
           </div>
 
           <div className="animate-fade-soft-delay lg:justify-self-end">
@@ -68,7 +112,7 @@ function HeroSection({ hero }) {
                 <img
                   src={hero.featuredImage}
                   alt={hero.featuredAlt}
-                  className="aspect-[4/5] w-full object-cover"
+                  className="aspect-[4/5] w-full object-cover transition duration-700 hover:scale-[1.02]"
                 />
               </div>
               <div className="mt-5 grid grid-cols-2 gap-3">

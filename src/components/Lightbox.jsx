@@ -75,6 +75,9 @@ function Lightbox({ item, onClose, onPrevious, onNext }) {
         <div className="grid max-h-[88vh] lg:grid-cols-[1.2fr_0.8fr]">
           <div className="relative bg-stone-950">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_45%)]" />
+            <div className="pointer-events-none absolute left-5 top-5 z-10 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-white/90 backdrop-blur">
+              Memory Preview
+            </div>
             <img
               src={item.image}
               alt={item.alt}

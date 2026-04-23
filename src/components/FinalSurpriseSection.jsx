@@ -17,7 +17,7 @@ function FinalSurpriseSection({ message }) {
           <button
             type="button"
             onClick={() => setRevealed((current) => !current)}
-            className="rounded-full bg-stone-900 px-8 py-4 text-sm font-semibold uppercase tracking-[0.25em] text-white transition duration-300 hover:-translate-y-0.5 hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-rose-300"
+            className="rounded-full bg-stone-900 px-8 py-4 text-sm font-semibold uppercase tracking-[0.25em] text-white shadow-[0_18px_50px_rgba(28,25,23,0.22)] transition duration-300 hover:-translate-y-0.5 hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-rose-300"
           >
             {revealed ? 'Hide The Message' : message.buttonLabel}
           </button>
@@ -28,7 +28,7 @@ function FinalSurpriseSection({ message }) {
             }`}
           >
             <div className="overflow-hidden">
-              <div className="mx-auto max-w-3xl rounded-[2rem] border border-white/70 bg-white/72 p-8 text-center shadow-[0_24px_70px_rgba(120,53,15,0.12)] sm:p-10">
+              <div className={`mx-auto max-w-3xl rounded-[2rem] border border-white/70 bg-white/72 p-8 text-center shadow-[0_24px_70px_rgba(120,53,15,0.12)] transition duration-700 sm:p-10 ${revealed ? 'scale-100' : 'scale-95'}`}>
                 <p className="font-serif-display text-3xl leading-tight text-stone-800 sm:text-4xl">
                   {message.reveal}
                 </p>

@@ -63,7 +63,7 @@ function FeaturedCarousel({ items, onOpen }) {
                     src={item.image}
                     alt={item.alt}
                     loading="lazy"
-                    className="aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-105 lg:h-full lg:aspect-auto"
+                    className="aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-[1.06] lg:h-full lg:aspect-auto"
                   />
                 </div>
                 <div className="flex flex-col justify-between gap-6 p-6 sm:p-8">
@@ -76,9 +76,14 @@ function FeaturedCarousel({ items, onOpen }) {
                     </h3>
                     <p className="text-sm leading-7 text-stone-600 sm:text-base">{item.description}</p>
                   </div>
-                  <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
-                    Tap to view larger
-                  </p>
+                  <div className="flex items-center justify-between gap-4">
+                    <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
+                      Tap to view larger
+                    </p>
+                    <span className="rounded-full border border-rose-100 bg-rose-50 px-3 py-2 text-[0.64rem] font-semibold uppercase tracking-[0.28em] text-rose-500">
+                      {item.category}
+                    </span>
+                  </div>
                 </div>
               </div>
             </button>

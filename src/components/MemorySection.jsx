@@ -23,7 +23,7 @@ function MemorySection({ chapter, onOpen, index }) {
 
       <div className="pointer-events-none mx-auto mt-8 flex max-w-4xl items-center gap-4 px-6 sm:px-0">
         <span className="h-px flex-1 bg-gradient-to-r from-transparent via-rose-200 to-rose-300/80" />
-        <span className="font-serif-display text-2xl text-rose-300">✦</span>
+        <span className="font-serif-display text-2xl text-rose-300">*</span>
         <span className="h-px flex-1 bg-gradient-to-l from-transparent via-rose-200 to-rose-300/80" />
       </div>
 
