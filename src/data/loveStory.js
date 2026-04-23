@@ -5,6 +5,7 @@ const allPhotoModules = import.meta.glob(
     import: 'default',
   },
 );
+
 const highlightVideoModules = import.meta.glob('../assets/photos/**/Highlights/*.{mp4,MP4,mov,MOV,webm,WEBM}', {
   eager: true,
   import: 'default',
@@ -240,9 +241,7 @@ export function buildLoveStoryData() {
     items: galleryItems.filter((item) => item.category === category),
   })).filter((chapter) => chapter.items.length > 0);
 
-  const featuredMemory =
-    pickItem(favoritesItems, 0) ??
-    pickItem(galleryItems, 0);
+  const featuredMemory = pickItem(favoritesItems, 0) ?? pickItem(galleryItems, 0);
 
   return {
     categories: ['All', ...categoryCycle],

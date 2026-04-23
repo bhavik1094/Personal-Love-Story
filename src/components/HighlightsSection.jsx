@@ -43,7 +43,7 @@ function VideoThumb({ video, active, onSelect, index }) {
 function HighlightsSection({ highlights }) {
   const videos = highlights?.videos ?? [];
   const [activeIndex, setActiveIndex] = useState(0);
-  const [hasStarted, setHasStarted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const mainVideoRef = useRef(null);
   const thumbStripRef = useRef(null);
 
@@ -67,6 +67,7 @@ function HighlightsSection({ highlights }) {
 
     video.pause();
     video.currentTime = 0;
+    video.load();
   }, [activeIndex]);
 
   useEffect(() => {
@@ -89,7 +90,7 @@ function HighlightsSection({ highlights }) {
   }, [hasVideos, videos.length]);
 
   const goTo = (nextIndex) => {
-    setHasStarted(false);
+    setIsPlaying(false);
     setActiveIndex(nextIndex);
 
     if (thumbStripRef.current) {
@@ -124,9 +125,9 @@ function HighlightsSection({ highlights }) {
     try {
       video.muted = false;
       await video.play();
-      setHasStarted(true);
+      setIsPlaying(true);
     } catch {
-      setHasStarted(false);
+      setIsPlaying(false);
     }
   };
 
@@ -150,10 +151,13 @@ function HighlightsSection({ highlights }) {
                   className="aspect-video w-full object-cover"
                   playsInline
                   preload="metadata"
-                  controls={hasStarted}
+                  controls
+                  onPlay={() => setIsPlaying(true)}
+                  onPause={() => setIsPlaying(false)}
+                  onEnded={() => setIsPlaying(false)}
                 />
 
-                {!hasStarted ? (
+                {!isPlaying ? (
                   <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(180deg,rgba(0,0,0,0.18),rgba(0,0,0,0.5))]">
                     <button
                       type="button"
@@ -161,7 +165,7 @@ function HighlightsSection({ highlights }) {
                       className="group inline-flex flex-col items-center gap-4 rounded-full border border-white/20 bg-white/14 px-8 py-7 text-white shadow-[0_25px_70px_rgba(0,0,0,0.28)] backdrop-blur-md transition hover:scale-[1.02] hover:bg-white/18 focus:outline-none focus:ring-2 focus:ring-white/80"
                     >
                       <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-rose-600 shadow-lg transition group-hover:scale-105">
-                        ▶
+                        &#9654;
                       </span>
                       <span className="text-xs font-semibold uppercase tracking-[0.34em] text-rose-50">
                         Play Highlight
@@ -266,7 +270,7 @@ function HighlightsSection({ highlights }) {
                 Drop Your Videos Into The Highlights Folder
               </h3>
               <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-stone-600 sm:text-lg">
-                Add `.mp4`, `.mov`, or `.webm` files to `src/assets/photos/Highlights` and this section
+                Add `.mp4`, `.mov`, or `.webm` files to `src/assets/photos/wedding/Highlights` and this section
                 will automatically turn them into a premium video showcase.
               </p>
             </div>
