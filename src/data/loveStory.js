@@ -188,6 +188,10 @@ function pickItem(items, preferredIndex) {
   return items[preferredIndex] ?? items[0] ?? null;
 }
 
+function pickItemByFilename(items, filename) {
+  return items.find((item) => item.filename === filename) ?? null;
+}
+
 function buildCategorizedGalleryItems(allPhotos) {
   const categorizedItems = categoryCycle.flatMap((category) => {
     const folderName = categoryFolderMap[category];
@@ -209,6 +213,9 @@ export function buildLoveStoryData() {
   const galleryItems = buildCategorizedGalleryItems(allPhotos);
   const heroItem = pickItem(galleryItems, 18) ?? pickItem(createGalleryItems(allPhotos), 18);
   const favoritesItems = galleryItems.filter((item) => item.category === 'Favorites');
+  const heroBackgroundPhoto = pickItemByFilename(allPhotos, 'IMG-20260213-WA0043.jpg');
+  const firstSmilePhoto = pickItemByFilename(allPhotos, '1.jpg');
+  const deepeningBondPhoto = pickItemByFilename(allPhotos, '2.jpg');
 
   const timelineEvents = [
     {
@@ -217,22 +224,22 @@ export function buildLoveStoryData() {
       date: '29 August 2025',
       description:
         'It was the kind of moment that looked simple from the outside, but somewhere in my heart I knew you were becoming someone I would never stop choosing.',
-      image: pickItem(galleryItems, 4)?.image ?? '',
+        image: firstSmilePhoto?.image ?? pickItem(galleryItems, 4)?.image ?? '',
       alt: 'A moment from the beginning of your story',
     },
     {
       id: 'deepening-bond',
       title: 'The Days We Became Each Other’s Safe Place',
-      date: 'Replace with your real date',
+      date: '7 November 2025',
       description:
         'Use this milestone for the phase where conversations became deeper, laughter became easier, and home started to feel like a person.',
-      image: pickItem(galleryItems, 15)?.image ?? '',
+        image: deepeningBondPhoto?.image ?? pickItem(galleryItems, 15)?.image ?? '',
       alt: 'A meaningful chapter in your relationship',
     },
     {
       id: 'promise',
       title: 'A Promise Wrapped In Love',
-      date: 'Replace with your real date',
+      date: '3 February 2026',
       description:
         'This is a beautiful spot for a memory tied to commitment, a celebration, or the day everything felt wonderfully certain.',
       image: pickItem(galleryItems, 31)?.image ?? '',
@@ -281,7 +288,7 @@ export function buildLoveStoryData() {
   return {
     categories: ['All', ...categoryCycle],
     hero: {
-      image: heroItem?.image ?? '',
+      image: heroBackgroundPhoto?.image ?? heroItem?.image ?? '',
       title: 'The Journey of Us',
       subtitle:
         'A small digital keepsake built from our memories, our laughter, and all the quiet little moments that turned into a beautiful life together.',
