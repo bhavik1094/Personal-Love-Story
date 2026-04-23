@@ -7,7 +7,7 @@ function VideoThumb({ video, active, onSelect, index }) {
     <button
       type="button"
       onClick={onSelect}
-      className={`group min-w-[15rem] overflow-hidden rounded-[1.6rem] border p-3 text-left transition duration-300 focus:outline-none focus:ring-2 focus:ring-rose-300 sm:min-w-[17rem] ${
+      className={`group w-[min(17rem,calc(100vw-8rem))] shrink-0 snap-center overflow-hidden rounded-[1.6rem] border p-3 text-left transition duration-300 focus:outline-none focus:ring-2 focus:ring-rose-300 sm:w-[17rem] ${
         active
           ? 'border-rose-200 bg-white/90 shadow-[0_18px_55px_rgba(120,53,15,0.14)]'
           : 'border-white/70 bg-white/65 shadow-[0_16px_45px_rgba(120,53,15,0.08)] hover:-translate-y-0.5 hover:bg-white/85'
@@ -118,7 +118,7 @@ function HighlightsSection({ highlights }) {
       <Reveal className="mt-12 sm:mt-14">
         <div className="overflow-hidden rounded-[2.5rem] border border-white/65 bg-[linear-gradient(180deg,rgba(255,255,255,0.75),rgba(255,244,246,0.86))] shadow-[0_35px_110px_rgba(120,53,15,0.14)] backdrop-blur-xl">
           {hasVideos && activeVideo ? (
-            <div className="grid gap-0 lg:grid-cols-[1.12fr_0.88fr]">
+            <div className="grid gap-0 lg:grid-cols-[minmax(0,1.12fr)_minmax(20rem,0.88fr)]">
               <div className="relative bg-stone-950">
                 <video
                   ref={mainVideoRef}
@@ -169,7 +169,7 @@ function HighlightsSection({ highlights }) {
                 </button>
               </div>
 
-              <div className="flex flex-col justify-between gap-6 p-6 sm:p-8 lg:p-10">
+              <div className="min-w-0 flex flex-col justify-between gap-6 p-6 sm:p-8 lg:p-10">
                 <div className="space-y-4">
                   <span className="inline-flex rounded-full border border-rose-200 bg-white/80 px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.34em] text-rose-500">
                     Our Special Moments
@@ -221,7 +221,7 @@ function HighlightsSection({ highlights }) {
 
                   <div
                     ref={thumbStripRef}
-                    className="mt-5 flex gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                    className="-mx-2 mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-2 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                   >
                     {videos.map((video, index) => (
                       <VideoThumb
