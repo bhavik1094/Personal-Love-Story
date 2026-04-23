@@ -11,6 +11,14 @@ const highlightVideoModules = import.meta.glob('../assets/photos/**/Highlights/*
   import: 'default',
 });
 
+const highlightPosterModules = import.meta.glob(
+  '../assets/photos/**/Highlights/posters/*.{jpg,jpeg,png,JPG,JPEG,PNG,webp,WEBP}',
+  {
+    eager: true,
+    import: 'default',
+  },
+);
+
 const categoryFolderMap = {
   Favorites: 'favorites',
   Trips: 'trips',
@@ -83,6 +91,24 @@ function makeReadableTitle(filename) {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+function normalizeAssetName(filename) {
+  return filename.replace(/\.[^.]+$/, '').trim().toLowerCase();
+}
+
+function getVideoMimeType(filename) {
+  const extension = filename.split('.').pop()?.toLowerCase();
+
+  if (extension === 'mov') {
+    return 'video/quicktime';
+  }
+
+  if (extension === 'webm') {
+    return 'video/webm';
+  }
+
+  return 'video/mp4';
+}
+
 function createPhotoRecord(path, image) {
   return {
     path,
@@ -102,10 +128,17 @@ function getAllPhotos() {
 }
 
 function getHighlightVideos() {
+  const posterMap = Object.entries(highlightPosterModules).reduce((map, [path, image]) => {
+    const filename = path.split('/').pop() ?? path;
+    map.set(normalizeAssetName(filename), image);
+    return map;
+  }, new Map());
+
   return Object.entries(highlightVideoModules)
     .map(([path, src], index) => {
       const filename = path.split('/').pop() ?? path;
       const title = makeReadableTitle(filename);
+      const poster = posterMap.get(normalizeAssetName(filename)) ?? '';
 
       return {
         id: `highlight-${index + 1}`,
@@ -114,6 +147,8 @@ function getHighlightVideos() {
         title,
         subtitle: highlightSubtitleCycle[index % highlightSubtitleCycle.length],
         category: 'Highlights',
+        type: getVideoMimeType(filename),
+        poster,
       };
     })
     .sort((first, second) =>
@@ -179,7 +214,7 @@ export function buildLoveStoryData() {
     {
       id: 'first-smile',
       title: 'When Everything Started To Feel Different',
-      date: 'Replace with your real date',
+      date: '29 August 2025',
       description:
         'It was the kind of moment that looked simple from the outside, but somewhere in my heart I knew you were becoming someone I would never stop choosing.',
       image: pickItem(galleryItems, 4)?.image ?? '',

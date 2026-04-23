@@ -15,14 +15,17 @@ function VideoThumb({ video, active, onSelect, index }) {
       aria-label={`Show highlight ${index + 1}: ${video.title}`}
     >
       <div className="relative overflow-hidden rounded-[1.2rem] bg-stone-950">
-        <video
-          src={video.src}
-          className="aspect-video w-full object-cover opacity-90 transition duration-500 group-hover:scale-[1.03]"
-          muted
-          playsInline
-          preload="metadata"
-        />
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.06),rgba(0,0,0,0.45)_100%)]" />
+        {video.poster ? (
+          <img
+            src={video.poster}
+            alt={`${video.title} preview`}
+            className="aspect-video w-full object-cover opacity-95 transition duration-500 group-hover:scale-[1.03]"
+            loading="lazy"
+          />
+        ) : (
+          <div className="aspect-video w-full bg-[radial-gradient(circle_at_top,rgba(255,228,230,0.24),rgba(12,10,9,1))]" />
+        )}
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08),rgba(0,0,0,0.48)_100%)]" />
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <span className="rounded-full border border-white/20 bg-white/15 px-3 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white backdrop-blur">
             Preview
@@ -44,6 +47,7 @@ function HighlightsSection({ highlights }) {
   const videos = highlights?.videos ?? [];
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [videoError, setVideoError] = useState('');
   const mainVideoRef = useRef(null);
   const thumbStripRef = useRef(null);
 
@@ -58,17 +62,16 @@ function HighlightsSection({ highlights }) {
     return `${String(activeIndex + 1).padStart(2, '0')} / ${String(videos.length).padStart(2, '0')}`;
   }, [activeIndex, hasVideos, videos.length]);
 
-  useEffect(() => {
-    const video = mainVideoRef.current;
+  const goTo = (nextIndex) => {
+    setIsPlaying(false);
+    setVideoError('');
+    setActiveIndex(nextIndex);
 
-    if (!video) {
-      return;
+    if (thumbStripRef.current) {
+      const child = thumbStripRef.current.children[nextIndex];
+      child?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
     }
-
-    video.pause();
-    video.currentTime = 0;
-    video.load();
-  }, [activeIndex]);
+  };
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -77,27 +80,17 @@ function HighlightsSection({ highlights }) {
       }
 
       if (event.key === 'ArrowLeft') {
-        setActiveIndex((current) => (current - 1 + videos.length) % videos.length);
+        goTo((activeIndex - 1 + videos.length) % videos.length);
       }
 
       if (event.key === 'ArrowRight') {
-        setActiveIndex((current) => (current + 1) % videos.length);
+        goTo((activeIndex + 1) % videos.length);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [hasVideos, videos.length]);
-
-  const goTo = (nextIndex) => {
-    setIsPlaying(false);
-    setActiveIndex(nextIndex);
-
-    if (thumbStripRef.current) {
-      const child = thumbStripRef.current.children[nextIndex];
-      child?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    }
-  };
+  }, [activeIndex, hasVideos, videos.length]);
 
   const showNext = () => {
     if (!hasVideos) {
@@ -124,9 +117,12 @@ function HighlightsSection({ highlights }) {
 
     try {
       video.muted = false;
+      video.load();
       await video.play();
       setIsPlaying(true);
+      setVideoError('');
     } catch {
+      setVideoError('Use the browser play control if autoplay with sound is blocked on this device.');
       setIsPlaying(false);
     }
   };
@@ -147,18 +143,28 @@ function HighlightsSection({ highlights }) {
                 <video
                   ref={mainVideoRef}
                   key={activeVideo.id}
-                  src={activeVideo.src}
                   className="aspect-video w-full object-cover"
+                  poster={activeVideo.poster || undefined}
                   playsInline
                   preload="metadata"
                   controls
-                  onPlay={() => setIsPlaying(true)}
+                  onPlay={() => {
+                    setIsPlaying(true);
+                    setVideoError('');
+                  }}
                   onPause={() => setIsPlaying(false)}
                   onEnded={() => setIsPlaying(false)}
-                />
+                  onError={() => {
+                    setIsPlaying(false);
+                    setVideoError('This file could not be played in the browser. Try another highlight while I keep this one visible.');
+                  }}
+                >
+                  <source src={activeVideo.src} type={activeVideo.type} />
+                  Your browser does not support HTML5 video playback.
+                </video>
 
                 {!isPlaying ? (
-                  <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(180deg,rgba(0,0,0,0.18),rgba(0,0,0,0.5))]">
+                  <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.46))]">
                     <button
                       type="button"
                       onClick={playActiveVideo}
@@ -218,6 +224,23 @@ function HighlightsSection({ highlights }) {
                   <p className="text-base leading-8 text-stone-600 sm:text-lg">
                     {activeVideo.subtitle}
                   </p>
+                  {videoError ? (
+                    <div className="space-y-3 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-4 text-sm text-rose-700">
+                      <p>{videoError}</p>
+                      <a
+                        href={activeVideo.src}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex rounded-full border border-rose-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-rose-600 transition hover:bg-rose-50"
+                      >
+                        Open Video Directly
+                      </a>
+                    </div>
+                  ) : (
+                    <p className="text-sm uppercase tracking-[0.24em] text-stone-400">
+                      Tap play to hear the original audio and music.
+                    </p>
+                  )}
                 </div>
 
                 <div className="rounded-[1.8rem] border border-white/70 bg-white/65 p-5 shadow-[0_18px_55px_rgba(120,53,15,0.08)]">
@@ -230,7 +253,10 @@ function HighlightsSection({ highlights }) {
                     </p>
                   </div>
 
-                  <div ref={thumbStripRef} className="mt-5 flex gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                  <div
+                    ref={thumbStripRef}
+                    className="mt-5 flex gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  >
                     {videos.map((video, index) => (
                       <VideoThumb
                         key={video.id}
